@@ -2,6 +2,7 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
 
+
 public class Handle : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
 {
    Mesh mMesh;
@@ -29,6 +30,7 @@ public class Handle : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHa
    public void OnBeginDrag(PointerEventData eventData)
    {
       mPlane = new Plane(Vector3.up, transform.position);
+      objectToResize.BeginResize(transform.position);
    }
 
    //////////////////////////////////////////////////////////
@@ -38,8 +40,8 @@ public class Handle : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHa
       Ray ray = cam.ScreenPointToRay(Input.mousePosition);
       float distance;
       mPlane.Raycast(ray, out distance);
-      transform.position = ray.GetPoint(distance);
-      objectToResize.Resize(transform.position);
+      //transform.position = ray.GetPoint(distance);
+      objectToResize.Resize(ray.GetPoint(distance));
    }
 
    //////////////////////////////////////////////////////////
