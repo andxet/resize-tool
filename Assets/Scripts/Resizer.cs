@@ -6,6 +6,8 @@ using UnityEngine;
 [ExecuteInEditMode]
 public class Resizer : MonoBehaviour
 {
+   public Vector3 mimimumSize = Vector3.one;
+
    Renderer mRenderer; //This could be a vector
    GameObject mChild;
    Vector3 mPivot;
@@ -18,7 +20,7 @@ public class Resizer : MonoBehaviour
       mRenderer = GetComponentInChildren<Renderer>();
       mChild = mRenderer.gameObject;
 #if DEBUG //Let's assume that when the release is built, theese checks are passed
-      if (mRenderer == null || mChild == null)
+      if (mRenderer == null || mChild == null || mimimumSize.x < 0 || mimimumSize.y < 0 || mimimumSize.z < 0)
       {
          Debug.LogError("Resizer " + name + ": component non correctly initialized.");
          enabled = false;
@@ -62,6 +64,10 @@ public class Resizer : MonoBehaviour
       //Multiply the initial scale with the ratio
       Vector3 finalScale = mStartScale;
       finalScale.Scale(increment);
+
+      finalScale.x = Mathf.Max(finalScale.x, mimimumSize.x);
+      finalScale.y = Mathf.Max(finalScale.y, mimimumSize.y);
+      finalScale.z = Mathf.Max(finalScale.z, mimimumSize.z);
 
       //Assign the scale
       transform.localScale = finalScale;
