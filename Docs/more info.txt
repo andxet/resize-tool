@@ -1,0 +1,5 @@
+INFO AGGIUNTIVE PER IL TEST BIM:
+1) La logica può essere implementata dove più si preferisce. Naturalmente implementandola in C++ costituisce un bonus visto il nostro workflow aziendale molto incentrato sul C++
+2) L'interazione deve essere possibile modificando qualsiasi punto del tavolo ed il ridimensionamento deve avvenire come se si stesse allungando quello specifico angolo del tavolo. Per esempio, modificando l'angolo inferiore destro del tavolo (se ipotizziamo una camera in volo sopra il tavolo che lo osserva dall'alto), ci aspettiamo che l'angolo opposto (superiore sinistro) rimanga immobile mentre quello su cui si è cliccato segua il mouse.
+3) Tavolo e sedie possono essere rappresentate in qualsiasi modo, a noi interessa la logica ed il funzionamento, non ci interessa la qualità dei modelli o della grafica in generale
+4) La camera può essere fissa ma deve comunque permettere un agevole interazione con il tavolo. Naturalmente una camera mobile costituisce un bonus
