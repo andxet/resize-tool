@@ -1,6 +1,6 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
+﻿#if UNITY_EDITOR
+using UnityEditor;
+#endif
 using UnityEngine;
 
 [ExecuteInEditMode]
@@ -96,6 +96,11 @@ public class Resizer : MonoBehaviour
          float xHalf = (bb.extents.x + 0.01f);
          float yHalf = (bb.extents.y + 0.01f);
          float zHalf = (bb.extents.z + 0.01f);
+
+#if UNITY_EDITOR
+         //Bounding Box dimension
+         Handles.Label(bb.center, bb.size.ToString());
+#endif
 
          //Front
          Vector3 fTopLeftCorner = new Vector3(mChild.transform.position.x - xHalf, mChild.transform.position.y + yHalf, mChild.transform.position.z + zHalf);
