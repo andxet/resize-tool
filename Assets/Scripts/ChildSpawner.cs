@@ -8,30 +8,39 @@ public class ChildSpawner : MonoBehaviour
    public GameObject objectToPlace;
 
    [Tooltip("Space from the borders")]
-   public float margin = 30.0f;
+   public float margin = 0.30f;
    [Tooltip("Space between elements")]
-   public float padding = 20.0f;
+   public float padding = 0.20f;
 
    Renderer mRenderer;
-   Bounds mBounds;
+   float mChildWidth;
 
-   public List<GameObject> horizontalObjects = new List<GameObject>();
-   public List<GameObject> verticalObjects = new List<GameObject>();
+   List<GameObject> horizontalObjects = new List<GameObject>();
+   List<GameObject> verticalObjects = new List<GameObject>();
 
-   // Use this for initialization
+   //////////////////////////////////////////////////////////
    void Start()
    {
+      Renderer[] rends = {};
       if (objectToMonitor)
          mRenderer = objectToMonitor.GetComponent<Renderer>();
-      if(objectToPlace)
+      if (objectToPlace)
       {
-         Renderer rend = objectToPlace.GetComponent<Renderer>();
-         if (objectToPlace != null)
-            mBounds = rend.bounds;
+         
+         //GameObject go = Instantiate(objectToPlace);
+         //Renderer rend = go.GetComponent<Renderer>();
+         rends = objectToPlace.GetComponentsInChildren<Renderer>();
+         if (rends.Length != 0)
+         {
+            Bounds bound = rends[0].bounds;
+            for (int i = 1; i < rends.Length; i++)
+               bound.Encapsulate(rends[i].bounds);
+            mChildWidth = bound.size.x;
+         }
       }
 
 #if DEBUG //Let's assume that when the release is built, theese checks are passed
-      if (objectToMonitor == null || mRenderer == null || objectToPlace == null || mBounds == null)
+      if (objectToMonitor == null || mRenderer == null || objectToPlace == null || rends.Length == 0)
       {
          Debug.LogError("ChildSpawner " + name + ": component non correctly initialized.");
          enabled = false;
@@ -40,7 +49,7 @@ public class ChildSpawner : MonoBehaviour
 #endif
    }
 
-   // Update is called once per frame
+   //////////////////////////////////////////////////////////
    void Update()
    {
       Bounds bounds = mRenderer.bounds;
@@ -49,9 +58,45 @@ public class ChildSpawner : MonoBehaviour
 
       //Available width
       float width = bounds.size.x - 2 * margin;
-      if(width > 0)
+      if (width > 0)
       {
-         int numChairs = (int)(width / (mBounds.size.x + padding));
+         
+         float chairWithPadding = mChildWidth + padding;
+         int numChairs = (int)(width / chairWithPadding);
+         float remain = width - numChairs * chairWithPadding;
+         if (remain > mChildWidth)
+         {
+            numChairs++;
+            remain -= mChildWidth;
+         }
+         else
+            remain += padding;
+
+         //Be sure that the right amount of child are present
+         int childDifference = numChairs - horizontalObjects.Count;
+         if(childDifference < 0)
+         {
+            List<GameObject> objectToDelete = horizontalObjects.GetRange(numChairs, Mathf.Abs(childDifference));
+            foreach (GameObject go in objectToDelete)
+               Destroy(go);
+            horizontalObjects.RemoveRange(numChairs, Mathf.Abs(childDifference));
+         }
+         else if(childDifference > 0)
+         {
+            for (int i = 0; i < childDifference; i++)
+               horizontalObjects.Add(Instantiate(objectToPlace));
+         }
+
+
+         Vector3 startingPoint = bounds.center;
+         startingPoint.x += -bounds.extents.x + margin + remain/2 + mChildWidth/2;
+         startingPoint.y = 0;
+         startingPoint.z += -bounds.extents.z;
+         foreach(GameObject go in horizontalObjects)
+         {
+            go.transform.position = startingPoint;
+            startingPoint.x += mChildWidth + padding;
+         }
       }
    }
 }
